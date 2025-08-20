@@ -19,7 +19,7 @@ jobs:
             const pr = context.payload.pull_request;
             if (pr && pr.head.ref.startsWith("progress")) {
               // Add warning comment
-              await github.issues.createComment({
+              await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -27,7 +27,7 @@ jobs:
               });
 
               // Add label "do-not-merge"
-              await github.issues.addLabels({
+              await github.rest.issues.addLabels({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
