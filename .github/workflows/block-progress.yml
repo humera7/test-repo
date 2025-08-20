@@ -13,13 +13,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            if ("${{ github.head_ref }}".startsWith("progress")) {
+            const pr = context.payload.pull_request;
+            if (pr && pr.head.ref.startsWith("progress")) {
               github.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 body: "⚠️ This PR is review-only. Do NOT merge via UI. Merge final changes from branch-review only."
-              })
+              });
             }
       - name: Fail if branch starts with progress
         run: |
@@ -29,5 +30,6 @@ jobs:
           else
             echo "✅ Branch allowed."
           fi
+
 
 
