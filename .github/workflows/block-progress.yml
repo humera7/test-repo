@@ -14,7 +14,7 @@ jobs:
       - name: Warn about progress branch
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
             if (pr && pr.head.ref.startsWith("progress")) {
@@ -43,3 +43,4 @@ jobs:
             exit 1
           else
             echo "✅ Branch allowed."
+
