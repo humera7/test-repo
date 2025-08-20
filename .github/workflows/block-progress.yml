@@ -1,0 +1,19 @@
+# .github/workflows/block-progress.yml
+name: Block Progress Branch Merge
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  block:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block merge for progress branches
+        run: |
+          if [[ "${GITHUB_HEAD_REF}" == progress* ]]; then
+            echo "❌ Merging a branch starting with 'progress' into main is not allowed via PR."
+            exit 1
+          else
+            echo "✅ Branch allowed."
+          fi
