@@ -2,34 +2,44 @@ name: Block Progress Branch Merge
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     branches: [main]
 
 jobs:
-  block:
+  block-progress-pr:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Add warning comment
+      # Step 1: Add warning comment and label if branch starts with progress*
+      - name: Warn about progress branch
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
             if (pr && pr.head.ref.startsWith("progress")) {
-              github.issues.createComment({
+              // Add warning comment
+              await github.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 body: "⚠️ This PR is review-only. Do NOT merge via UI. Merge final changes from branch-review only."
               });
+
+              // Add label "do-not-merge"
+              await github.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ["do-not-merge"]
+              });
             }
-      - name: Fail if branch starts with progress
+
+      # Step 2: Fail PR check if branch starts with progress*
+      - name: Fail PR from progress branches
         run: |
           if [[ "${GITHUB_HEAD_REF}" == progress* ]]; then
             echo "❌ Merging branches starting with 'progress' is not allowed via PR."
             exit 1
           else
             echo "✅ Branch allowed."
-          fi
-
-
-
