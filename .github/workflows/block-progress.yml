@@ -8,15 +8,6 @@ jobs:
   block:
     runs-on: ubuntu-latest
     steps:
-      - name: Fail if branch starts with progress
-        run: |
-          if [[ "${GITHUB_HEAD_REF}" == progress* ]]; then
-            echo "❌ Merging branches starting with 'progress' is not allowed via PR."
-            exit 1
-          else
-            echo "✅ Branch allowed."
-          fi
-
       - name: Add warning comment
         uses: actions/github-script@v6
         with:
@@ -29,3 +20,12 @@ jobs:
                 body: "⚠️ This PR is review-only. Do NOT merge via UI. Merge final changes from branch-review only."
               })
             }
+      - name: Fail if branch starts with progress
+        run: |
+          if [[ "${GITHUB_HEAD_REF}" == progress* ]]; then
+            echo "❌ Merging branches starting with 'progress' is not allowed via PR."
+            exit 1
+          else
+            echo "✅ Branch allowed."
+          fi
+
