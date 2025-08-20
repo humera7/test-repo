@@ -1,4 +1,3 @@
-# .github/workflows/block-progress.yml
 name: Block Progress Branch Merge
 
 on:
@@ -9,11 +8,24 @@ jobs:
   block:
     runs-on: ubuntu-latest
     steps:
-      - name: Block merge for progress branches
+      - name: Fail if branch starts with progress
         run: |
           if [[ "${GITHUB_HEAD_REF}" == progress* ]]; then
-            echo "❌ Merging a branch starting with 'progress' into main is not allowed via PR."
+            echo "❌ Merging branches starting with 'progress' is not allowed via PR."
             exit 1
           else
             echo "✅ Branch allowed."
           fi
+
+      - name: Add warning comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            if ("${{ github.head_ref }}".startsWith("progress")) {
+              github.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: "⚠️ This PR is review-only. Do NOT merge via UI. Merge final changes from branch-review only."
+              })
+            }
